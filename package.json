@@ -34,17 +34,14 @@
   "license": "Apache-2.0",
   "sideEffects": false,
   "dependencies": {
-    "@prisma/driver-adapter-utils": "6.5.0-dev.50"
+    "@prisma/driver-adapter-utils": "6.6.0-dev.54",
+    "@tidbcloud/serverless": "^0.1.0"
   },
   "devDependencies": {
-    "@tidbcloud/serverless": "^0.1.0",
     "@types/node": "^20.5.1",
     "prettier": "^2.7.1",
     "tsup": "^7.2.0",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6"
-  },
-  "peerDependencies": {
-    "@tidbcloud/serverless": ">= 0.1.0"
   }
 }

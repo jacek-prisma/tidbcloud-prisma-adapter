@@ -79,6 +79,7 @@ function hexToUint8Array(hexString) {
 var name = "@tidbcloud/prisma-adapter";
 
 // src/tidbcloud.ts
+import { connect } from "@tidbcloud/serverless";
 var debug = Debug("prisma:driver-adapter:tidbcloud");
 var defaultDatabase = "test";
 var TiDBCloudQueryable = class {
@@ -164,21 +165,7 @@ var TiDBCloudTransaction = class extends TiDBCloudQueryable {
     }
   }
 };
-var TiDBCloudTransactionContext = class extends TiDBCloudQueryable {
-  constructor(connect) {
-    super(connect);
-  }
-  async startTransaction() {
-    const options = {
-      usePhantomQuery: true
-    };
-    const tag = "[js::startTransaction]";
-    debug("%s option: %O", tag, options);
-    const tx = await this.client.begin();
-    return new TiDBCloudTransaction(tx, options);
-  }
-};
-var PrismaTiDBCloud = class extends TiDBCloudQueryable {
+var PrismaTiDBCloudAdapter = class extends TiDBCloudQueryable {
   constructor(client) {
     super(client);
   }
@@ -198,12 +185,28 @@ var PrismaTiDBCloud = class extends TiDBCloudQueryable {
       schemaName: dbName
     };
   }
-  async transactionContext() {
-    return new TiDBCloudTransactionContext(this.client);
+  async startTransaction() {
+    const options = {
+      usePhantomQuery: true
+    };
+    const tag = "[js::startTransaction]";
+    debug("%s option: %O", tag, options);
+    const tx = await this.client.begin();
+    return new TiDBCloudTransaction(tx, options);
   }
   async dispose() {
   }
 };
+var PrismaTiDBCloudAdapterFactory = class {
+  constructor(config) {
+    this.config = config;
+  }
+  provider = "mysql";
+  adapterName = name;
+  connect() {
+    return Promise.resolve(new PrismaTiDBCloudAdapter(connect(this.config)));
+  }
+};
 export {
-  PrismaTiDBCloud
+  PrismaTiDBCloudAdapterFactory as PrismaTiDBCloud
 };

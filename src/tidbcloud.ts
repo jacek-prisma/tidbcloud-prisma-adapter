@@ -1,16 +1,14 @@
 import type TiDBCloud from "@tidbcloud/serverless";
-import { Debug, ok } from "@prisma/driver-adapter-utils";
+import { Debug } from "@prisma/driver-adapter-utils";
 import type {
   ConnectionInfo,
-  DriverAdapter,
   SqlResultSet,
   SqlQuery,
-  SqlConnection,
   Transaction,
-  Result,
-  TransactionContext,
   TransactionOptions,
   SqlQueryable,
+  SqlDriverAdapterFactory,
+  SqlDriverAdapter,
 } from "@prisma/driver-adapter-utils";
 import {
   type TiDBCloudColumnType,
@@ -18,6 +16,7 @@ import {
   customDecoder,
 } from "./conversion";
 import { name as packageName } from "../package.json";
+import { connect, type Config } from "@tidbcloud/serverless";
 
 const debug = Debug("prisma:driver-adapter:tidbcloud");
 
@@ -39,6 +38,7 @@ class TiDBCloudQueryable<ClientT extends TiDBCloud.Connection | TiDBCloud.Tx>
 {
   readonly provider = "mysql";
   readonly adapterName = packageName;
+
   constructor(protected client: ClientT) {}
 
   /**
@@ -135,30 +135,9 @@ class TiDBCloudTransaction
   }
 }
 
-class TiDBCloudTransactionContext
+export class PrismaTiDBCloudAdapter
   extends TiDBCloudQueryable<TiDBCloud.Connection>
-  implements TransactionContext
-{
-  constructor(connect: TiDBCloud.Connection) {
-    super(connect);
-  }
-
-  async startTransaction(): Promise<Transaction> {
-    const options: TransactionOptions = {
-      usePhantomQuery: true,
-    };
-
-    const tag = "[js::startTransaction]";
-    debug("%s option: %O", tag, options);
-
-    const tx = await this.client.begin();
-    return new TiDBCloudTransaction(tx, options);
-  }
-}
-
-export class PrismaTiDBCloud
-  extends TiDBCloudQueryable<TiDBCloud.Connection>
-  implements SqlConnection
+  implements SqlDriverAdapter
 {
   constructor(client: TiDBCloud.Connection) {
     super(client);
@@ -182,9 +161,27 @@ export class PrismaTiDBCloud
     };
   }
 
-  async transactionContext(): Promise<TransactionContext> {
-    return new TiDBCloudTransactionContext(this.client);
+  async startTransaction(): Promise<Transaction> {
+    const options: TransactionOptions = {
+      usePhantomQuery: true,
+    };
+
+    const tag = "[js::startTransaction]";
+    debug("%s option: %O", tag, options);
+    const tx = await this.client.begin();
+    return new TiDBCloudTransaction(tx, options);
   }
 
   async dispose(): Promise<void> {}
+}
+
+export class PrismaTiDBCloudAdapterFactory implements SqlDriverAdapterFactory {
+  readonly provider = "mysql";
+  readonly adapterName = packageName;
+
+  constructor(private readonly config: Config) {}
+
+  connect(): Promise<SqlDriverAdapter> {
+    return Promise.resolve(new PrismaTiDBCloudAdapter(connect(this.config)));
+  }
 }

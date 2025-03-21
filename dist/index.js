@@ -20,7 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
-  PrismaTiDBCloud: () => PrismaTiDBCloud
+  PrismaTiDBCloud: () => PrismaTiDBCloudAdapterFactory
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -105,6 +105,7 @@ function hexToUint8Array(hexString) {
 var name = "@tidbcloud/prisma-adapter";
 
 // src/tidbcloud.ts
+var import_serverless = require("@tidbcloud/serverless");
 var debug = (0, import_driver_adapter_utils2.Debug)("prisma:driver-adapter:tidbcloud");
 var defaultDatabase = "test";
 var TiDBCloudQueryable = class {
@@ -190,21 +191,7 @@ var TiDBCloudTransaction = class extends TiDBCloudQueryable {
     }
   }
 };
-var TiDBCloudTransactionContext = class extends TiDBCloudQueryable {
-  constructor(connect) {
-    super(connect);
-  }
-  async startTransaction() {
-    const options = {
-      usePhantomQuery: true
-    };
-    const tag = "[js::startTransaction]";
-    debug("%s option: %O", tag, options);
-    const tx = await this.client.begin();
-    return new TiDBCloudTransaction(tx, options);
-  }
-};
-var PrismaTiDBCloud = class extends TiDBCloudQueryable {
+var PrismaTiDBCloudAdapter = class extends TiDBCloudQueryable {
   constructor(client) {
     super(client);
   }
@@ -224,10 +211,26 @@ var PrismaTiDBCloud = class extends TiDBCloudQueryable {
       schemaName: dbName
     };
   }
-  async transactionContext() {
-    return new TiDBCloudTransactionContext(this.client);
+  async startTransaction() {
+    const options = {
+      usePhantomQuery: true
+    };
+    const tag = "[js::startTransaction]";
+    debug("%s option: %O", tag, options);
+    const tx = await this.client.begin();
+    return new TiDBCloudTransaction(tx, options);
   }
   async dispose() {
+  }
+};
+var PrismaTiDBCloudAdapterFactory = class {
+  constructor(config) {
+    this.config = config;
+  }
+  provider = "mysql";
+  adapterName = name;
+  connect() {
+    return Promise.resolve(new PrismaTiDBCloudAdapter((0, import_serverless.connect)(this.config)));
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
