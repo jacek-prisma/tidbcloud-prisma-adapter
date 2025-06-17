@@ -1,7 +1,6 @@
 node_modules
 
 yarn-error.log
-dist
 build
 tmp
 pnpm-debug.log
@@ -17,7 +16,6 @@ libquery-engine*
 query_engine-windows.dll.node
 
 *tmp.db
-dist/
 declaration/
 
 *.tsbuildinfo
