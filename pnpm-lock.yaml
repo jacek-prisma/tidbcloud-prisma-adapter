@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@prisma/driver-adapter-utils':
-        specifier: 6.12.0
-        version: 6.12.0
+        specifier: 6.15.0-dev.23
+        version: 6.15.0-dev.23
     devDependencies:
       '@tidbcloud/serverless':
         specifier: ^0.1.0
@@ -223,8 +223,11 @@ packages:
   '@prisma/debug@6.12.0':
     resolution: {integrity: sha512-plbz6z72orcqr0eeio7zgUrZj5EudZUpAeWkFTA/DDdXEj28YHDXuiakvR6S7sD6tZi+jiwQEJAPeV6J6m/tEQ==}
 
-  '@prisma/driver-adapter-utils@6.12.0':
-    resolution: {integrity: sha512-uSUKB17Xs4pZB1UJZL6+PHV9Ab6vCWD20nXoimb5YG4vPqtBVdPKNYa35QbDgdUQbX321daUcgYTsLY/jxOG3w==}
+  '@prisma/debug@6.15.0-dev.23':
+    resolution: {integrity: sha512-B3lXROS3L2vR+4DvDxE6XnLT78uSERE4ePMZ+gyYZuB7Un69TLl1nt3vYGZO5YNPBvK/aePAskzE5d9XiGmmWg==}
+
+  '@prisma/driver-adapter-utils@6.15.0-dev.23':
+    resolution: {integrity: sha512-xRDuaUpnEQ/2QI43Y3MedjHohJWn6U5p0KpWNQn4rUFrhORka4+uQJpuecB2N2+xEyYuJvD5QbY4mYIDZQD22g==}
 
   '@prisma/engines-version@6.12.0-15.8047c96bbd92db98a2abc7c9323ce77c02c89dbc':
     resolution: {integrity: sha512-70vhecxBJlRr06VfahDzk9ow4k1HIaSfVUT3X0/kZoHCMl9zbabut4gEXAyzJZxaCGi5igAA7SyyfBI//mmkbQ==}
@@ -823,9 +826,11 @@ snapshots:
 
   '@prisma/debug@6.12.0': {}
 
-  '@prisma/driver-adapter-utils@6.12.0':
+  '@prisma/debug@6.15.0-dev.23': {}
+
+  '@prisma/driver-adapter-utils@6.15.0-dev.23':
     dependencies:
-      '@prisma/debug': 6.12.0
+      '@prisma/debug': 6.15.0-dev.23
 
   '@prisma/engines-version@6.12.0-15.8047c96bbd92db98a2abc7c9323ce77c02c89dbc': {}
 
